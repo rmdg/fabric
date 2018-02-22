@@ -4,14 +4,82 @@ Changelog
 
 * :support:`- backported` Update packaging metadata so wheel archives include
   the ``LICENSE`` file.
+* :release:`1.14.0 <2017-08-25>`
+* :feature:`1475` Honor ``env.timeout`` when opening new remote sessions (as
+  opposed to the initial overall connection, which already honored timeout
+  settings.) Thanks to ``@EugeniuZ`` for the report & ``@jrmsgit`` for the
+  first draft of the patch.
+
+  .. note::
+    This feature only works with Paramiko 1.14.3 and above; if your Paramiko
+    version is older, no timeout can be set, and the previous behavior will
+    occur instead.
+
+* :release:`1.13.2 <2017-04-24>`
+* :release:`1.12.2 <2017-04-24>`
+* :bug:`1542` (via :issue:`1543`) Catch Paramiko-level gateway connection
+  errors (``ChannelError``) when raising ``NetworkError``; this prevents an
+  issue where gateway related issues were being treated as authentication
+  errors. Thanks to Charlie Stanley for catch & patch.
+* :bug:`1555` Multiple simultaneous `~fabric.operations.get` and/or
+  `~fabric.operations.put` with ``use_sudo=True`` and for the same remote host
+  and path could fail unnecessarily. Thanks ``@arnimarj`` for the report and
+  Pierce Lopez for the patch.
+* :bug:`1427` (via :issue:`1428`) Locate ``.pyc`` files when searching for
+  fabfiles to load; previously we only used the presence of ``.py`` files to
+  determine whether loading should be attempted. Credit: Ray Chen.
+* :bug:`1294` fix text escaping for `~fabric.contrib.files.contains` and
+  `~fabric.contrib.files.append` which would fail if the text contained e.g.
+  ``>``. Thanks to ``@ecksun`` for report & Pierce Lopez for the patch.
+* :support:`1065 backported` Fix incorrect SSH config reference in the docs for
+  ``env.keepalive``; it corresponds to ``ServerAliveInterval``, not
+  ``ClientAliveInterval``. Credit: Harry Percival.
+* :bug:`1574` `~fabric.contrib.project.upload_project` failed for folder in
+  current directory specified without any path separator. Thanks ``@aidanmelen``
+  for the report and Pierce Lopez for the patch.
+* :support:`1590 backported` Replace a reference to ``fab`` in a test
+  subprocess, to use the ``python -m <package>`` style instead; this allows
+  ``python setup.py test`` to run the test suite without having Fabric already
+  installed. Thanks to ``@BenSturmfels`` for catch & patch.
+* :support:`- backported` Backport :issue:`1462` to 1.12.x (was previously only
+  backported to 1.13.x.)
+* :support:`1416 backported` Add explicit "Python 2 only" note to ``setup.py``
+  trove classifiers to help signal that fact to various info-gathering tools.
+  Patch courtesy of Gavin Bisesi.
+* :bug:`1526` Disable use of PTY and shell for a background command execution
+  within `contrib.sed <fabric.contrib.files.sed>`, preventing a small class of
+  issues on some platforms/environments. Thanks to ``@doflink`` for the report
+  and Pierce Lopez for the final patch.
 * :support:`1539 backported` Add documentation for :ref:`env.output_prefix
   <output_prefix>`. Thanks ``@jphalip``.
+* :bug:`1514` Compatibility with Python 2.5 was broken by using the ``format()``
+  method of a string (only in 1.11+). Report by ``@pedrudehuere``.
+* :release:`1.13.1 <2016-12-09>`
+* :bug:`1462` Make a PyCrypto-specific import and method call optional to avoid
+  ``ImportError`` problems under Paramiko 2.x. Thanks to Alex Gaynor for catch
+  & patch!
+* :release:`1.13.0 <2016-12-09>`
+* :support:`1461` Update setup requirements to allow Paramiko 2.x, now that
+  it's stable and been out in the wild for some time. Paramiko 1.x still works
+  like it always did; the only change to Paramiko 2 was the backend moving from
+  PyCrypto to Cryptography.
+
+  .. warning::
+    If you are upgrading an existing environment, the install dependencies have
+    changed; please see Paramiko's installation docs for details:
+    http://www.paramiko.org/installing.html
+
+* :release:`1.12.1 <2016-12-05>`
+* :release:`1.11.3 <2016-12-05>`
 * :release:`1.10.5 <2016-12-05>`
 * :bug:`1470` When using `~fabric.operations.get` with glob expressions, a lack
   of matches for the glob would result in an empty file named after the glob
   expression (in addition to raising an error). This has been fixed so the
   empty file is no longer generated. Thanks to Georgy Kibardin for the catch &
   initial patch.
+* :feature:`1495` Update the internals of `~fabric.contrib.files` so its
+  members work with SSH servers running on Windows. Thanks to Hamdi Sahloul for
+  the patch.
 * :support:`1483 backported` (also re: :issue:`1386`, :issue:`1374`,
   :issue:`1300`) Add :ref:`an FAQ <faq-csh>` about quote problems in remote
   ``csh`` causing issues with Fabric's shell-wrapping and quote-escaping.
@@ -25,15 +93,64 @@ Changelog
   issues with incorrect password prompts or prompt-related exceptions when
   using ``reject_unknown_hosts`` and encountering missing or bad
   ``known_hosts`` entries. Thanks to Lukáš Doktor for catch & patch.
+* :release:`1.12.0 <2016-07-25>`
+* :release:`1.11.2 <2016-07-25>`
 * :release:`1.10.4 <2016-07-25>`
+* :feature:`1491` Implement ``sudo``-specific password caching (:ref:`docs
+  <sudo-passwords>`). This can be used to work around issues where over-eager
+  submission of ``env.password`` at login time causes authentication problems
+  (e.g. during two-factor auth).
 * :bug:`1447` Fix a relative import in ``fabric.network`` to be
   correctly/consistently absolute instead. Thanks to ``@bildzeitung`` for catch
   & patch.
+* :release:`1.11.1 <2016-04-09>`
+* :bug:`- (==1.11)` Bumped version to ``1.11.1`` due to apparently accidentally
+  uploading a false ``1.11.0`` to PyPI sometime in the past (PyPI is secure &
+  prevents reusing deleted filenames.) We have no memory of this, but databases
+  don't lie!
+* :release:`1.11.0 <2016-04-09>`
 * :release:`1.10.3 <2016-04-09>`
+* :bug:`1135` (via :issue:`1241`) Modified order of operations in
+  `~fabric.operations.run`/`~fabric.operations.sudo` to apply environment vars
+  before prefixing commands (instead of after). Report by ``@warsamebashir``,
+  patch by Curtis Mattoon.
+* :feature:`1203` (via :issue:`1240`) Add a ``case_sensitive`` kwarg to
+  `~fabric.contrib.files.contains` (which toggles use of ``egrep -i``). Report
+  by ``@xoul``, patch by Curtis Mattoon.
+* :feature:`800` Add ``capture_buffer_size`` kwarg to
+  `~fabric.operations.run`/`~fabric.operations.sudo` so users can limit memory
+  usage in situations where subprocesses generate very large amounts of
+  stdout/err. Thanks to Jordan Starcher for the report & Omri Bahumi for an
+  early version of the patchset.
+* :feature:`1161` Add ``use_sudo`` kwarg to `~fabric.operations.reboot`.
+  Credit: Bryce Verdier.
 * :support:`943 backported` Tweak ``env.warn_only`` docs to note that it
   applies to all operations, not just ``run``/``sudo``. Thanks ``@akitada``.
+* :feature:`932` Add a ``temp_dir`` kwarg to
+  `~fabric.contrib.files.upload_template` which is passed into its inner
+  `~fabric.operations.put` call. Thanks to ``@nburlett`` for the patch.
 * :support:`1257 backported` Add notes to the usage docs for ``fab`` regarding
   the program's exit status. Credit: ``@koalaman``.
+* :feature:`1261` Expose Paramiko's Kerberos functionality as Fabric config
+  vars & command-line options. Thanks to Ramanan Sivaranjan for catch & patch,
+  and to Johannes Löthberg & Michael Bennett for additional testing.
+* :feature:`1271` Allow users whose fabfiles use `fabric.colors` to disable
+  colorization at runtime by specifying ``FABRIC_DISABLE_COLORS=1`` (or any
+  other non-empty value). Credit: Eric Berg.
+* :feature:`1326` Make `~fabric.contrib.project.rsync_project` aware of
+  ``env.gateway``, using a ``ProxyCommand`` under the hood. Credit: David
+  Rasch.
+* :support:`1359` Add a more-visible top-level ``CHANGELOG.rst`` pointing users
+  to the actual changelog stored within the Sphinx directory tree. Thanks to
+  Jonathan Vanasco for catch & patch.
+* :feature:`1388` Expose Jinja's ``keep_trailing_newline`` parameter in
+  `~fabric.contrib.files.upload_template` so users can force template renders
+  to preserve trailing newlines. Thanks to Chen Lei for the patch.
+* :bug:`1389 major` Gently overhaul SSH port derivation so it's less
+  surprising; previously, any non-default value stored in ``env.port`` was
+  overriding all SSH-config derived values. See the API docs for
+  `~fabric.network.normalize` for details on how it now behaves. Thanks to
+  Harry Weppner for catch & patch.
 * :support:`1454 backported` Remove use of ``:option:`` directives in the
   changelog, it's currently broken in modern Sphinx & doesn't seem to have
   actually functioned on Renaissance-era Sphinx either.

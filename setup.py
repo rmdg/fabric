@@ -31,7 +31,7 @@ For more information, please see the Fabric website or execute ``fab --help``.
 if sys.version_info[:2] < (2, 6):
     install_requires=['paramiko>=1.10,<1.13']
 else:
-    install_requires=['paramiko>=1.10,<2.0']
+    install_requires=['paramiko>=1.10,<3.0']
 
 
 setup(
@@ -61,6 +61,7 @@ setup(
           'Operating System :: Unix',
           'Operating System :: POSIX',
           'Programming Language :: Python',
+          'Programming Language :: Python :: 2 :: Only',
           'Programming Language :: Python :: 2.5',
           'Programming Language :: Python :: 2.6',
           'Programming Language :: Python :: 2.7',

@@ -93,7 +93,7 @@ def test_abort_message_only_printed_once():
     # perform when they are allowed to bubble all the way to the top. So, we
     # invoke a subprocess and look at its stderr instead.
     with quiet():
-        result = local("fab -f tests/support/aborts.py kaboom", capture=True)
+        result = local("python -m fabric.__main__ -f tests/support/aborts.py kaboom", capture=True)
     # When error in #1318 is present, this has an extra "It burns!" at end of
     # stderr string.
     eq_(result.stderr, "Fatal error: It burns!\n\nAborting.")
@@ -321,3 +321,31 @@ class TestRingBuffer(TestCase):
         self.b.extend("abcde")
         self.b.extend("fgh")
         eq_(self.b, ['d', 'e', 'f', 'g', 'h'])
+
+    def test_plus_equals(self):
+        self.b += "abcdefgh"
+        eq_(self.b, ['d', 'e', 'f', 'g', 'h'])
+
+    def test_oversized_extend(self):
+        self.b.extend("abcdefghijklmn")
+        eq_(self.b, ['j', 'k', 'l', 'm', 'n'])
+
+    def test_zero_maxlen_append(self):
+        b = RingBuffer([], maxlen=0)
+        b.append('a')
+        eq_(b, [])
+
+    def test_zero_maxlen_extend(self):
+        b = RingBuffer([], maxlen=0)
+        b.extend('abcdefghijklmnop')
+        eq_(b, [])
+
+    def test_None_maxlen_append(self):
+        b = RingBuffer([], maxlen=None)
+        b.append('a')
+        eq_(b, ['a'])
+
+    def test_None_maxlen_extend(self):
+        b = RingBuffer([], maxlen=None)
+        b.extend('abcdefghijklmnop')
+        eq_(''.join(b), 'abcdefghijklmnop')

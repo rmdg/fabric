@@ -348,6 +348,25 @@ traffic through the remote SSH daemon to the final destination.
 
 .. seealso:: :option:`--gateway <-g>`
 
+.. _kerberos:
+
+``gss_(auth|deleg|kex)``
+------------------------
+
+**Default:** ``False`` for all.
+
+These three options (``gss_auth``, ``gss_deleg``, and ``gss_kex``) are passed
+verbatim into Paramiko's ``Client.connect`` method, and control
+Kerberos/GSS-API behavior. For details, see Paramiko's docs: `GSS-API
+authentication <http://docs.paramiko.org/en/latest/api/ssh_gss.html>`_, `GSS-API key exchange <http://docs.paramiko.org/en/latest/api/kex_gss.html>`_.
+
+.. note::
+    This functionality requires Paramiko ``1.15`` or above! You will get
+    ``TypeError`` about unexpected keyword arguments with Paramiko ``1.14`` or
+    earlier, as it lacks Kerberos support.
+
+.. versionadded:: 1.11
+.. seealso:: :option:`--gss-auth`, :option:`--gss-deleg`, :option:`--gss-kex`
 
 .. _host_string:
 
@@ -503,7 +522,7 @@ still be used, of course.)
 
 **Default:** ``True``
 
-By default Fabric prefixes every line of ouput with either ``[hostname] out:``
+By default Fabric prefixes every line of output with either ``[hostname] out:``
 or ``[hostname] err:``. Those prefixes may be hidden by setting
 ``env.output_prefix`` to ``False``.
 
@@ -760,6 +779,35 @@ Return codes in this list are used to determine whether calls to
 are considered successful.
 
 .. versionadded:: 1.6
+
+
+.. _sudo_password:
+
+``sudo_password``
+-----------------
+
+**Default:** ``None``
+
+The default password to submit to ``sudo`` password prompts. If empty or
+``None``, :ref:`env.password <password>` and/or :ref:`env.passwords
+<passwords>` is used as a fallback.
+
+.. seealso::
+    :ref:`password-management`, :option:`--sudo-password`,
+    :option:`--initial-sudo-password-prompt`
+.. versionadded:: 1.12
+
+.. _sudo_passwords:
+
+``sudo_passwords``
+------------------
+
+**Default:** ``{}``
+
+Identical to :ref:`passwords`, but used for sudo-only passwords.
+
+.. seealso:: :ref:`password-management`
+.. versionadded:: 1.12
 
 .. _sudo_prefix:
 
